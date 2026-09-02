@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Become a Donor &mdash; LifeDrop{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>Become a Donor</h1>
+  <p>Register once &mdash; we'll keep track of your eligibility so recipients
+     can find you when it's safe for you to donate again.</p>
+</section>
+
+{% if success %}
+  <div class="alert alert-success">
+    <strong>Thank you, {{ donor.name }}!</strong> You're registered as a
+    {{ donor.blood_group }} donor in {{ donor.city }}. You can register
+    another donor below.
+  </div>
+{% endif %}
+
+{% if errors.duplicate %}
+  <div class="alert alert-error">{{ errors.duplicate }}</div>
+{% endif %}
+
+<form class="form-card" method="post" action="{{ url_for('main.register') }}" novalidate>
+  <div class="form-row">
+    <label for="name">Full Name</label>
+    <input type="text" id="name" name="name" value="{{ form.get('name', '') }}" required>
+    {% if errors.name %}<span class="field-error">{{ errors.name }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="blood_group">Blood Group</label>
+    <select id="blood_group" name="blood_group" required>
+      <option value="">-- Select --</option>
+      {% for bg in blood_groups %}
+        <option value="{{ bg }}" {% if form.get('blood_group') == bg %}selected{% endif %}>{{ bg }}</option>
+      {% endfor %}
+    </select>
+    {% if errors.blood_group %}<span class="field-error">{{ errors.blood_group }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" value="{{ form.get('email', '') }}" required>
+    {% if errors.email %}<span class="field-error">{{ errors.email }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="phone">Phone Number</label>
+    <input type="tel" id="phone" name="phone" value="{{ form.get('phone', '') }}" placeholder="e.g. 555-123-4567" required>
+    {% if errors.phone %}<span class="field-error">{{ errors.phone }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="city">City / Location</label>
+    <input type="text" id="city" name="city" value="{{ form.get('city', '') }}" required>
+    {% if errors.city %}<span class="field-error">{{ errors.city }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="last_donation_date">Last Donation Date (leave blank if never donated)</label>
+    <input type="date" id="last_donation_date" name="last_donation_date" value="{{ form.get('last_donation_date', '') }}">
+    {% if errors.last_donation_date %}<span class="field-error">{{ errors.last_donation_date }}</span>{% endif %}
+  </div>
+
+  <button type="submit" class="btn btn-primary">Register</button>
+</form>
+{% endblock %}

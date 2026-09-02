@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Donors &mdash; LifeDrop{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>Registered Donors</h1>
+  <p>Everyone currently registered in the system, with their live
+     eligibility status &mdash; a donor is eligible again once at least
+     90 days have passed since their last recorded donation.</p>
+</section>
+
+<section class="results">
+  <h2>{{ donors|length }} registered donor{{ '' if donors|length == 1 else 's' }}</h2>
+  {% if donors %}
+    <table class="donor-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Blood Group</th>
+          <th>City</th>
+          <th>Contact</th>
+          <th>Last Donation</th>
+          <th>Eligibility</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for donor in donors %}
+          <tr>
+            <td>{{ donor.name }}</td>
+            <td><span class="badge">{{ donor.blood_group }}</span></td>
+            <td>{{ donor.city }}</td>
+            <td>{{ donor.email }}<br>{{ donor.phone }}</td>
+            <td>{{ donor.last_donation_date.strftime('%Y-%m-%d') if donor.last_donation_date else 'Never donated' }}</td>
+            <td>
+              {% if donor.is_eligible() %}
+                <span class="status-ok">Eligible now</span>
+              {% else %}
+                <span class="status-wait">Eligible in {{ donor.days_until_eligible() }} day{{ '' if donor.days_until_eligible() == 1 else 's' }}</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty-state">No donors have registered yet.
+       <a href="{{ url_for('main.register') }}">Be the first to register.</a></p>
+  {% endif %}
+</section>
+{% endblock %}

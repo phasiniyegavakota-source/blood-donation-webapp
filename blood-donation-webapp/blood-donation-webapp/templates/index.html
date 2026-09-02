@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}LifeDrop &mdash; Blood Donation Management{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Every donor found faster is a life helped sooner.</h1>
+  <p>LifeDrop connects registered blood donors with people who need blood in an
+     emergency &mdash; search by blood group and location to find eligible
+     donors in seconds.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="{{ url_for('main.register') }}">Become a Donor</a>
+    <a class="btn btn-secondary" href="{{ url_for('main.search') }}">Find Donors</a>
+    <a class="btn btn-secondary" href="{{ url_for('main.request_blood') }}">Request Blood</a>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat-card">
+    <span class="stat-number">{{ donor_count }}</span>
+    <span class="stat-label">Registered Donors</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-number">{{ request_count }}</span>
+    <span class="stat-label">Blood Requests Logged</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-number">{{ inventory_units }}</span>
+    <span class="stat-label">Units in Inventory</span>
+  </div>
+</section>
+
+<section class="how-it-works">
+  <h2>How it works</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>1. Register</h3>
+      <p>Donors sign up with their blood group, contact info, city, and last
+         donation date so the system can track eligibility automatically.</p>
+    </div>
+    <div class="card">
+      <h3>2. Search</h3>
+      <p>Recipients or coordinators search by blood group and location. Donors
+         who donated within the last {{ 90 }} days are automatically excluded
+         to reflect real donation eligibility rules.</p>
+    </div>
+    <div class="card">
+      <h3>3. Connect</h3>
+      <p>Submit a blood request and immediately see a list of currently
+         eligible matching donors to reach out to.</p>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works">
+  <h2>More tools</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Donors</h3>
+      <p>Browse every registered donor and their live eligibility status
+         in one list.</p>
+      <a class="btn btn-secondary" href="{{ url_for('main.donors') }}">View Donors</a>
+    </div>
+    <div class="card">
+      <h3>Inventory</h3>
+      <p>Track units on hand for each blood group as a standalone stock
+         tracker, updated explicitly by staff.</p>
+      <a class="btn btn-secondary" href="{{ url_for('main.inventory') }}">View Inventory</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

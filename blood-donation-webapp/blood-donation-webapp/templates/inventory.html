@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Inventory &mdash; LifeDrop{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>Blood Inventory</h1>
+  <p>Current stock on hand for each blood group. This is a standalone
+     stock tracker &mdash; registering a donor does not automatically add
+     units here, since actual blood collection is a separate real-world
+     step performed by staff. Use the form below to record it once
+     units are collected or dispensed.</p>
+</section>
+
+{% if success %}
+  <div class="alert alert-success">Stock updated successfully.</div>
+{% endif %}
+{% if errors.blood_group or errors.units_available %}
+  <div class="alert alert-error">Could not update stock &mdash; see the errors below.</div>
+{% endif %}
+
+<section class="results">
+  <table class="donor-table">
+    <thead>
+      <tr><th>Blood Group</th><th>Units Available</th><th>Last Updated</th></tr>
+    </thead>
+    <tbody>
+      {% for item in inventory %}
+        <tr>
+          <td><span class="badge">{{ item.blood_group }}</span></td>
+          <td>{{ item.units_available }}</td>
+          <td>{{ item.last_updated.strftime('%Y-%m-%d %H:%M') if item.last_updated else 'Never' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="page-header" style="margin-top: 2rem;">
+  <h2>Update Stock</h2>
+  <p>Set the number of units currently on hand for a blood group.</p>
+</section>
+
+<form class="form-card" method="post" action="{{ url_for('main.inventory_adjust') }}" novalidate>
+  <div class="form-row">
+    <label for="blood_group">Blood Group</label>
+    <select id="blood_group" name="blood_group" required>
+      <option value="">-- Select --</option>
+      {% for bg in blood_groups %}
+        <option value="{{ bg }}">{{ bg }}</option>
+      {% endfor %}
+    </select>
+    {% if errors.blood_group %}<span class="field-error">{{ errors.blood_group }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="units_available">Units Available</label>
+    <input type="number" id="units_available" name="units_available" min="0" max="100000" required>
+    {% if errors.units_available %}<span class="field-error">{{ errors.units_available }}</span>{% endif %}
+  </div>
+
+  <button type="submit" class="btn btn-primary">Update Stock</button>
+</form>
+{% endblock %}

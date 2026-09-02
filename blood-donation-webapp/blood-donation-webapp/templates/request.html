@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Request Blood &mdash; LifeDrop{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>Request Blood</h1>
+  <p>Submit a request and we'll immediately show you currently eligible
+     donors who match the blood group and city.</p>
+</section>
+
+{% if success %}
+  <div class="alert alert-success">
+    <strong>Request submitted.</strong> We logged a request for
+    {{ blood_request.units_needed }} unit(s) of {{ blood_request.blood_group }}
+    in {{ blood_request.city }} ({{ blood_request.urgency }} urgency).
+  </div>
+
+  <section class="results">
+    <h2>{{ matches|length }} matching eligible donor{{ '' if matches|length == 1 else 's' }}</h2>
+    {% if matches %}
+      <table class="donor-table">
+        <thead>
+          <tr><th>Name</th><th>Blood Group</th><th>City</th><th>Contact</th></tr>
+        </thead>
+        <tbody>
+          {% for donor in matches %}
+            <tr>
+              <td>{{ donor.name }}</td>
+              <td><span class="badge">{{ donor.blood_group }}</span></td>
+              <td>{{ donor.city }}</td>
+              <td>{{ donor.email }}<br>{{ donor.phone }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">No eligible donors match this request yet. Try
+         widening the search on the <a href="{{ url_for('main.search') }}">Find Donors</a> page.</p>
+    {% endif %}
+  </section>
+{% endif %}
+
+<form class="form-card" method="post" action="{{ url_for('main.request_blood') }}" novalidate>
+  <div class="form-row">
+    <label for="requester_name">Your Name</label>
+    <input type="text" id="requester_name" name="requester_name" value="{{ form.get('requester_name', '') }}" required>
+    {% if errors.requester_name %}<span class="field-error">{{ errors.requester_name }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="contact_email">Contact Email</label>
+    <input type="email" id="contact_email" name="contact_email" value="{{ form.get('contact_email', '') }}" required>
+    {% if errors.contact_email %}<span class="field-error">{{ errors.contact_email }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="contact_phone">Contact Phone</label>
+    <input type="tel" id="contact_phone" name="contact_phone" value="{{ form.get('contact_phone', '') }}" required>
+    {% if errors.contact_phone %}<span class="field-error">{{ errors.contact_phone }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="blood_group">Blood Group Needed</label>
+    <select id="blood_group" name="blood_group" required>
+      <option value="">-- Select --</option>
+      {% for bg in blood_groups %}
+        <option value="{{ bg }}" {% if form.get('blood_group') == bg %}selected{% endif %}>{{ bg }}</option>
+      {% endfor %}
+    </select>
+    {% if errors.blood_group %}<span class="field-error">{{ errors.blood_group }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="city">City / Location</label>
+    <input type="text" id="city" name="city" value="{{ form.get('city', '') }}" required>
+    {% if errors.city %}<span class="field-error">{{ errors.city }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="hospital">Hospital (optional)</label>
+    <input type="text" id="hospital" name="hospital" value="{{ form.get('hospital', '') }}">
+  </div>
+
+  <div class="form-row">
+    <label for="units_needed">Units Needed</label>
+    <input type="number" id="units_needed" name="units_needed" min="1" max="50" value="{{ form.get('units_needed', 1) }}" required>
+    {% if errors.units_needed %}<span class="field-error">{{ errors.units_needed }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="urgency">Urgency</label>
+    <select id="urgency" name="urgency" required>
+      {% for level in urgency_levels %}
+        <option value="{{ level }}" {% if form.get('urgency', 'Medium') == level %}selected{% endif %}>{{ level }}</option>
+      {% endfor %}
+    </select>
+    {% if errors.urgency %}<span class="field-error">{{ errors.urgency }}</span>{% endif %}
+  </div>
+
+  <div class="form-row">
+    <label for="notes">Notes (optional)</label>
+    <textarea id="notes" name="notes" rows="3">{{ form.get('notes', '') }}</textarea>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit Request</button>
+</form>
+{% endblock %}

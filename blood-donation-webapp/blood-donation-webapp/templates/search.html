@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Find Donors &mdash; LifeDrop{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>Find Eligible Donors</h1>
+  <p>Search registered donors by blood group and city. Donors who donated
+     within the last {{ eligibility_days }} days are excluded automatically
+     since they aren't yet eligible to donate again.</p>
+</section>
+
+<form class="search-form" method="get" action="{{ url_for('main.search') }}">
+  <div class="form-row inline">
+    <label for="blood_group">Blood Group</label>
+    <select id="blood_group" name="blood_group">
+      <option value="">Any</option>
+      {% for bg in blood_groups %}
+        <option value="{{ bg }}" {% if blood_group == bg %}selected{% endif %}>{{ bg }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-row inline">
+    <label for="city">City / Location</label>
+    <input type="text" id="city" name="city" value="{{ city }}" placeholder="e.g. Springfield">
+  </div>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+{% if searched %}
+  <section class="results">
+    <h2>{{ donors|length }} eligible donor{{ '' if donors|length == 1 else 's' }} found</h2>
+    {% if donors %}
+      <table class="donor-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Blood Group</th>
+            <th>City</th>
+            <th>Contact</th>
+            <th>Last Donation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for donor in donors %}
+            <tr>
+              <td>{{ donor.name }}</td>
+              <td><span class="badge">{{ donor.blood_group }}</span></td>
+              <td>{{ donor.city }}</td>
+              <td>{{ donor.email }}<br>{{ donor.phone }}</td>
+              <td>{{ donor.last_donation_date.strftime('%Y-%m-%d') if donor.last_donation_date else 'Never donated' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">No eligible donors match that search yet. Try a
+         nearby city or check back later &mdash; matching donors may currently
+         be within their post-donation recovery window.</p>
+    {% endif %}
+  </section>
+{% endif %}
+{% endblock %}
