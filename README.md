@@ -1,4 +1,4 @@
-🩸 LifeDrop — Online Blood Donation Web Application
+🩸 Online Blood Donation Web Application
 ====================================================
 
 ![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)
